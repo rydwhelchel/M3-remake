@@ -1,0 +1,30 @@
+p {
+  font-size: clamp(0.5rem, 1.5vw, 2rem);
+}
+h1 {
+  font-size: 2.5em;
+}
+h2 {
+  font-size: 2em;
+}
+h3 {
+  font-size: 1.5em;
+}
+.listItem {
+  display: flex;
+  width: 1fr;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+  background-color: lightblue;
+}
+.super-grid {
+  display: grid;
+  justify-items: center;
+  grid-template-columns: 1fr;
+}
+.wrapper-grid {
+  display: grid;
+  padding: 20px;
+  grid-template-columns: 450px minmax(600px, 1fr) minmax(400px, 1fr);
+}

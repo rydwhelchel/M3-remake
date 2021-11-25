@@ -7,6 +7,7 @@ from flask_login import (
     login_manager,
     login_required,
     login_user,
+    logout_user,
     current_user,
 )
 from sqlalchemy import exc
@@ -112,6 +113,11 @@ def login_post():
             )
     return flask.redirect(flask.url_for("login"))
 
+@app.route("/logout", methods=["POST"])
+def logout():
+    """Logs out a user"""
+    logout_user()
+    return flask.redirect(flask.url_for("login"))
 
 @app.route("/save", methods=["POST"])
 def save():

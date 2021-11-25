@@ -1,7 +1,11 @@
 import './App.css';
 import { useState, useRef } from 'react';
-import { ChangeListAdd } from './ChangeListAdd.js';
-import { DisplayMessage } from './DisplayMessage.js';
+import Button from 'react-bootstrap/Button';
+import ListGroup from 'react-bootstrap/ListGroup';
+import { InputGroup, ListGroupItem } from 'react-bootstrap';
+import { Image } from 'react-bootstrap';
+import { FormControl } from 'react-bootstrap';
+import './static/List.css';
 
 function App() {
   const args = JSON.parse(document.getElementById('data').text);
@@ -34,6 +38,12 @@ function App() {
     line.parentNode.removeChild(line);
   }
 
+  function onLogoutClick() {
+    fetch('/logout', {
+      method: 'POST',
+    });
+  }
+
   function onSaveClick() {
     let data = {
       methods: methods,
@@ -59,72 +69,114 @@ function App() {
   }
 
   return (
-    <>
-      <h1>{args.current_user}'s Song Explorer</h1>
-      {args.are_artists_saved ? (
-        <>
-          <h2>{args.track_name}</h2>
-          <h3>{args.track_artist}</h3>
-          <div>
-            <img src={args.track_album_link} width={300} height={300} />
-          </div>
-          <div>
-            <audio controls>
-              <source src={args.track_preview} />
-            </audio>
-          </div>
-          <a href={args.genius_link}> Click here to see lyrics! </a>
-          <ul>
+    <div className="super-grid">
+      <h1>
+        {args.current_user}'s Song Explorer{' '}
+        <Button type="submit" variant="outline-danger" onClick={onLogoutClick}>
+          Logout
+        </Button>
+        <p style={{ fontSize: 'small' }}>please refresh after clicking</p>
+      </h1>
+      <div className="wrapper-grid">
+        <div>
+          {args.are_artists_saved ? (
+            <>
+              <h2>{args.track_name}</h2>
+              <h3>{args.track_artist}</h3>
+              <div>
+                <Image
+                  src={args.track_album_link}
+                  width={300}
+                  height={300}
+                  rounded
+                />
+              </div>
+              <div>
+                <audio controls>
+                  <source src={args.track_preview} />
+                </audio>
+              </div>
+              <a href={args.genius_link}> Click here to see lyrics! </a>
+            </>
+          ) : (
+            <h2>
+              Looks like you don't have anything saved! Use the form below!
+            </h2>
+          )}
+        </div>
+        <div>
+          <ListGroup variant="flush" as="ol" numbered>
             <h3>Currently Saved Artists:</h3>
-            {Object.keys(args.artists_saved).map((artist) => (
-              <li id={artist}>
-                {args.artists_saved[artist]}: {artist}
-                <button onClick={() => onRemoveClick(artist)}>Remove</button>
-              </li>
+            {args.are_artists_saved ? (
+              <>
+                {Object.keys(args.artists_saved).map((artist) => (
+                  <ListGroup.Item as="li" className="listItem" id={artist}>
+                    {args.artists_saved[artist]}: {artist}
+                    <Button
+                      variant="outline-danger"
+                      onClick={() => onRemoveClick(artist)}
+                    >
+                      Remove
+                    </Button>
+                  </ListGroup.Item>
+                ))}
+                {artistIdsAdded.map((artist, index) => (
+                  <ListGroup.Item as="li" className="listItem" id={artist}>
+                    {artistNamesAdded[index]}: {artist}
+                    <Button
+                      variant="outline-danger"
+                      onClick={() => onRemoveClick(artist)}
+                    >
+                      Remove
+                    </Button>
+                  </ListGroup.Item>
+                ))}
+              </>
+            ) : (
+              <></>
+            )}
+          </ListGroup>
+          <h1>Save a favorite artist ID for later:</h1>
+          <ListGroup variant="flush">
+            <InputGroup style={{ width: '100%' }}>
+              <FormControl
+                type="text"
+                style={{ width: '1fr' }}
+                placeholder="Add a new artist's ID"
+                ref={artistIDInput}
+                name="artist_id"
+              />
+              <Button onClick={onAddClick}>Add a new artist</Button>
+            </InputGroup>
+            <ListGroup.Item variant="flush" className="listItem">
+              Staged Changes <Button onClick={onSaveClick}>Save Changes</Button>
+            </ListGroup.Item>
+          </ListGroup>
+          <p>
+            <b>Format:</b> Pending method: Artist ID
+          </p>
+          <ListGroup>
+            {methods.map((item, index) =>
+              item === 'add' ? (
+                <ListGroup.Item variant="success">
+                  {item} : {artistChanges[index]}
+                </ListGroup.Item>
+              ) : (
+                <ListGroup.Item variant="danger">
+                  {item} : {artistChanges[index]}
+                </ListGroup.Item>
+              )
+            )}
+            {successes.map((item) => (
+              <ListGroup.Item variant="success">{item}</ListGroup.Item>
             ))}
-            {artistIdsAdded.map((artist, index) => (
-              <li id={artist}>
-                {artistNamesAdded[index]}: {artist}
-                <button onClick={() => onRemoveClick(artist)}>Remove</button>
-              </li>
+            {warnings.map((item) => (
+              <ListGroup.Item variant="danger">{item}</ListGroup.Item>
             ))}
-          </ul>
-        </>
-      ) : (
-        <h2>Looks like you don't have anything saved! Use the form below!</h2>
-      )}
-      <h1>Save a favorite artist ID for later:</h1>
-      <div>
-        <input
-          type="text"
-          placeholder="Add a new artist's ID"
-          ref={artistIDInput}
-          name="artist_id"
-        />
-        <button onClick={onAddClick}>Add a new artist</button>
+          </ListGroup>
+        </div>
       </div>
-      <h3>
-        Staged Changes <button onClick={onSaveClick}>Save Changes</button>
-      </h3>
-      <p>
-        <b>Format:</b> Pending method: Artist ID
-      </p>
-      <ul>
-        {methods.map((item, index) => (
-          <ChangeListAdd method={item} artist_id={artistChanges[index]} />
-        ))}
-      </ul>
-      <ul class="success">
-        {successes.map((item) => (
-          <DisplayMessage message={item} />
-        ))}
-      </ul>
-      <ul class="warning">
-        {warnings.map((item) => (
-          <DisplayMessage message={item} />
-        ))}
-      </ul>
-    </>
+    </div>
   );
 }
 

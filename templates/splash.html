@@ -1,26 +1,25 @@
 <html>
-
-<head>
-    <link rel="stylesheet" href="/static/style.css">
+  <head>
     <h1>Log-in to access your favorite artists!</h1>
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <ul class=warning_label>
-        {% for message in messages %}
-        <li>{{ message }}</li>
-        {% endfor %}
+    {% with messages = get_flashed_messages() %} {% if messages %}
+    <ul class="warning_label">
+      {% for message in messages %}
+      <li>{{ message }}</li>
+      {% endfor %}
     </ul>
-    {% endif %}
-    {% endwith %}
-</head>
+    {% endif %} {% endwith %}
+  </head>
 
-<body>
+  <body>
     <form action="/login" method="POST">
-        <input class="user_field" type="text" name="user" placeholder="Enter your username...">
-        <input type="submit" name="field" value="Log-in">
-        <input type="submit" name="field" value="Sign-up">
+      <input
+        class="user_field"
+        type="text"
+        name="user"
+        placeholder="Enter your username..."
+      />
+      <input type="submit" name="field" value="Log-in" />
+      <input type="submit" name="field" value="Sign-up" />
     </form>
-
-</body>
-
+  </body>
 </html>
